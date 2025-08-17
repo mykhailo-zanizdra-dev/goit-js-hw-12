@@ -1,40 +1,7 @@
-import { getImagesByQuery } from './js/pixabay-api.js';
-import {
-  createGallery,
-  clearGallery,
-  showLoader,
-  hideLoader,
-  showError,
-} from './js/render-functions.js';
+import refs from './js/refs.js';
+import { onLoadImages } from './js/handlers.js';
 
-const form = document.querySelector('.form');
-const searchButton = document.querySelector('.search-button');
+const { form, loadMoreButton } = refs;
 
-form.addEventListener('submit', async e => {
-  e.preventDefault();
-  clearGallery();
-  const queryString = e.target.elements['search-text'].value.trim();
-
-  if (queryString) {
-    showLoader();
-    searchButton.disabled = true;
-    searchButton.classList.add('disabled');
-
-    try {
-      const images = await getImagesByQuery(queryString);
-      if (!images.length) {
-        showError(
-          'Sorry, there are no images matching your search query. Please try again!'
-        );
-        return;
-      }
-      createGallery(images);
-    } catch (error) {
-      showError(`Error fetching images: ${error.message}`);
-    } finally {
-      hideLoader();
-      searchButton.disabled = false;
-      searchButton.classList.remove('disabled');
-    }
-  }
-});
+form.addEventListener('submit', onLoadImages);
+loadMoreButton.addEventListener('click', onLoadImages);

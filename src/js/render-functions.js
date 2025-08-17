@@ -3,9 +3,16 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 import iconStop from '../img/ic_stop.svg';
+import refs from './refs.js';
 
-const galleryList = document.querySelector('.gallery');
-const loader = document.querySelector('.loader');
+const {
+  galleryList,
+  loadMoreButton,
+  initialLoader,
+  loadMoreLoader,
+  searchButton,
+} = refs;
+
 let lightbox = new SimpleLightbox('.gallery a');
 
 const createGalleryItem = ({
@@ -45,15 +52,45 @@ const createGalleryItem = ({
 };
 
 export const createGallery = images => {
-  galleryList.innerHTML = images.map(createGalleryItem).join('');
+  galleryList.insertAdjacentHTML(
+    'beforeend',
+    images.map(createGalleryItem).join('')
+  );
   lightbox.refresh();
 };
 
 export const clearGallery = () => (galleryList.innerHTML = '');
 
-export const showLoader = () => loader.classList.remove('visually-hidden');
+export const showLoader = () =>
+  initialLoader.classList.remove('visually-hidden');
 
-export const hideLoader = () => loader.classList.add('visually-hidden');
+export const hideLoader = () => initialLoader.classList.add('visually-hidden');
+
+export const showLoadMoreLoader = () => {
+  loadMoreLoader.classList.remove('visually-hidden');
+};
+
+export const hideLoadMoreLoader = () => {
+  loadMoreLoader.classList.add('visually-hidden');
+};
+
+export const showLoadMoreButton = () => {
+  loadMoreButton.classList.remove('hidden');
+};
+
+export const hideLoadMoreButton = () => {
+  loadMoreButton.classList.add('hidden');
+};
+
+export const enableSearchButton = () => {
+  searchButton.disabled = false;
+  searchButton.classList.remove('disabled');
+};
+
+export const disableSearchButton = () => {
+  searchButton.disabled = true;
+  searchButton.classList.add('disabled');
+};
 
 export const showError = errorText =>
   iziToast.error({
@@ -68,4 +105,17 @@ export const showError = errorText =>
     progressBarColor: '#B51B1B',
     iconUrl: iconStop,
     iconSize: '24px',
+  });
+
+export const showInfo = infoText =>
+  iziToast.info({
+    title: 'Info',
+    message: infoText,
+    position: 'topRight',
+    timeout: 3000,
+    close: true,
+    color: '#48b9ffff',
+    titleColor: '#FFFFFF',
+    messageColor: '#FFFFFF',
+    progressBarColor: '#306cabff',
   });

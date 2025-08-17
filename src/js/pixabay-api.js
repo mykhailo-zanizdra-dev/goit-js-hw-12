@@ -18,7 +18,10 @@ export const getImagesByQuery = async (query, page = 1) => {
       },
     });
 
-    return response.data?.hits || [];
+    return {
+      images: response.data?.hits || [],
+      total: response.data?.totalHits || 0,
+    };
   } catch (error) {
     return error;
   }

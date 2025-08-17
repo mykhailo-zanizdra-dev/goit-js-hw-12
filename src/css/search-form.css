@@ -35,5 +35,5 @@
     align-items: center;
     flex-direction: column;
     max-width: 370px;
-    margin: 36px auto;
+    margin: 0 auto 36px auto;
 }

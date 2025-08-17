@@ -1,7 +1,6 @@
 .gallery-button {
     border-radius: 8px;
     padding: 8px 16px;
-    width: 90px;
     height: 40px;
     background-color: #4e75ff;
     font-weight: 500;
@@ -22,4 +21,18 @@
     background-color: #cfcfcf;
     cursor: not-allowed;
     color: #989898;
+}
+
+.load-more-button {
+    display: block;
+    margin: 0 auto;
+}
+
+.load-more-loader {
+    display: block;
+    margin: 0 auto;
+}
+
+.load-more-button.hidden {
+    display: none;
 }

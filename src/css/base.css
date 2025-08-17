@@ -27,6 +27,7 @@ body {
 
 main {
   flex-grow: 1;
+  padding: 36px 0;
 }
 
 main:has(.back-link) {
