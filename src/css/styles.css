@@ -11,5 +11,6 @@
 
 /* Sections style */
 @import url('./loader.css');
+@import url('./common.css');
 @import url('./gallery.css');
 @import url('./search-form.css');
