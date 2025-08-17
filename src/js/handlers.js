@@ -61,7 +61,9 @@ export const onLoadImages = async e => {
     }
     createGallery(images);
     showLoadMoreButton();
-    scrollDown();
+    if (!isSearchButton) {
+      scrollDown();
+    }
 
     loadMoreButton.dataset.page = nextPage;
   } catch (error) {
