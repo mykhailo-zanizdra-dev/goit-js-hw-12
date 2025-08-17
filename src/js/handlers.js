@@ -61,6 +61,7 @@ export const onLoadImages = async e => {
     }
     createGallery(images);
     showLoadMoreButton();
+
     if (!isSearchButton) {
       scrollDown();
     }
