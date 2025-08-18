@@ -14,44 +14,32 @@ import {
   hideLoadMoreLoader,
   hideLoadMoreButton,
 } from './js/render-functions.js';
-import api from './js/api.js';
-import { getCurrentPage, scrollDown } from './js/helpers.js';
+import { scrollDown } from './js/helpers.js';
 
-const { pixabay } = api;
 const { form, loadMoreButton } = refs;
 
-const onLoadImages = async e => {
+let currentQueryString = '';
+
+const onSubmitForm = async e => {
   e.preventDefault();
 
-  const isSearchButton = e.target.classList.contains('form');
-  let totalItems = 0;
-
-  if (isSearchButton) {
-    clearGallery();
-    loadMoreButton.dataset.page = 1;
-    hideLoadMoreLoader();
-    hideLoadMoreButton();
-  }
-
-  const queryString = form.elements['search-text'].value.trim();
-  const currentPage = parseInt(loadMoreButton.dataset.page) || 1;
-  const nextPage = isSearchButton ? currentPage : currentPage + 1;
+  const queryString = e.target.elements['search-text'].value.trim();
 
   if (!queryString) {
+    showError('Please enter a search term.');
     return;
   }
 
-  if (isSearchButton) {
-    showLoader();
-    disableSearchButton();
-  } else {
-    showLoadMoreLoader();
-    hideLoadMoreButton();
-  }
+  clearGallery();
+  loadMoreButton.dataset.page = 1;
+  hideLoadMoreLoader();
+  hideLoadMoreButton();
+  currentQueryString = queryString;
+  showLoader();
+  disableSearchButton();
 
   try {
-    const { images, total } = await getImagesByQuery(queryString, nextPage);
-    totalItems = total;
+    const { images, isLastPage } = await getImagesByQuery(queryString, 1);
 
     if (!images.length) {
       showError(
@@ -59,30 +47,49 @@ const onLoadImages = async e => {
       );
       return;
     }
-    createGallery(images);
-    showLoadMoreButton();
 
-    if (!isSearchButton) {
-      scrollDown();
+    if (isLastPage) {
+      showInfo(`We're sorry, but you've reached the end of search results.`);
+    } else {
+      showLoadMoreButton();
     }
-
-    loadMoreButton.dataset.page = nextPage;
+    createGallery(images);
   } catch (error) {
     showError(`Error fetching images: ${error.message}`);
   } finally {
     hideLoader();
     enableSearchButton();
-    hideLoadMoreLoader();
+  }
+};
 
-    const currentPage = getCurrentPage();
-    const isLastPage = currentPage >= Math.ceil(totalItems / pixabay.PER_PAGE);
+const onLoadImages = async () => {
+  const currentPage = parseInt(loadMoreButton.dataset.page) || 1;
+
+  showLoadMoreLoader();
+  hideLoadMoreButton();
+
+  try {
+    const { images, isLastPage } = await getImagesByQuery(
+      currentQueryString,
+      currentPage + 1
+    );
+    console.log('images', images);
 
     if (isLastPage) {
       hideLoadMoreButton();
       showInfo(`We're sorry, but you've reached the end of search results.`);
+    } else {
+      showLoadMoreButton();
+      scrollDown();
+      loadMoreButton.dataset.page = currentPage + 1;
     }
+    createGallery(images);
+  } catch (error) {
+    showError(`Error fetching images: ${error.message}`);
+  } finally {
+    hideLoadMoreLoader();
   }
 };
 
-form.addEventListener('submit', onLoadImages);
+form.addEventListener('submit', onSubmitForm);
 loadMoreButton.addEventListener('click', onLoadImages);

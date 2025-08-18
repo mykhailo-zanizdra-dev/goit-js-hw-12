@@ -18,9 +18,12 @@ export const getImagesByQuery = async (query, page = 1) => {
       },
     });
 
+    const totalItems = response.data?.totalHits || 0;
+    const isLastPage = page >= Math.ceil(totalItems / pixabay.PER_PAGE);
+
     return {
       images: response.data?.hits || [],
-      total: response.data?.totalHits || 0,
+      isLastPage,
     };
   } catch (error) {
     return error;
