@@ -14,11 +14,21 @@ import {
   hideLoadMoreLoader,
   hideLoadMoreButton,
 } from './js/render-functions.js';
-import { scrollDown } from './js/helpers.js';
 
-const { form, loadMoreButton } = refs;
+const { form, loadMoreButton, galleryList } = refs;
 
 let currentQueryString = '';
+let page = 1;
+
+const scrollDown = () => {
+  const { top, bottom } =
+    galleryList.querySelector('li')?.getBoundingClientRect() || {};
+
+  window.scrollBy({
+    top: (bottom - top) * 2,
+    behavior: 'smooth',
+  });
+};
 
 const onSubmitForm = async e => {
   e.preventDefault();
@@ -30,11 +40,11 @@ const onSubmitForm = async e => {
     return;
   }
 
+  page = 1;
+  currentQueryString = queryString;
   clearGallery();
-  loadMoreButton.dataset.page = 1;
   hideLoadMoreLoader();
   hideLoadMoreButton();
-  currentQueryString = queryString;
   showLoader();
   disableSearchButton();
 
@@ -63,27 +73,24 @@ const onSubmitForm = async e => {
 };
 
 const onLoadImages = async () => {
-  const currentPage = parseInt(loadMoreButton.dataset.page) || 1;
-
   showLoadMoreLoader();
   hideLoadMoreButton();
 
   try {
     const { images, isLastPage } = await getImagesByQuery(
       currentQueryString,
-      currentPage + 1
+      page + 1
     );
-    console.log('images', images);
+    createGallery(images);
+    scrollDown();
 
     if (isLastPage) {
       hideLoadMoreButton();
       showInfo(`We're sorry, but you've reached the end of search results.`);
     } else {
+      page += 1;
       showLoadMoreButton();
-      scrollDown();
-      loadMoreButton.dataset.page = currentPage + 1;
     }
-    createGallery(images);
   } catch (error) {
     showError(`Error fetching images: ${error.message}`);
   } finally {
