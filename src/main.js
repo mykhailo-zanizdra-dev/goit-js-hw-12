@@ -75,11 +75,12 @@ const onSubmitForm = async e => {
 const onLoadImages = async () => {
   showLoadMoreLoader();
   hideLoadMoreButton();
+  page += 1;
 
   try {
     const { images, isLastPage } = await getImagesByQuery(
       currentQueryString,
-      page + 1
+      page
     );
     createGallery(images);
     scrollDown();
@@ -88,7 +89,6 @@ const onLoadImages = async () => {
       hideLoadMoreButton();
       showInfo(`We're sorry, but you've reached the end of search results.`);
     } else {
-      page += 1;
       showLoadMoreButton();
     }
   } catch (error) {
